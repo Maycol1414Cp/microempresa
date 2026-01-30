@@ -1,4 +1,5 @@
 import os
+import socket
 
 from app import create_app
 from app.extensions import db
@@ -33,7 +34,28 @@ def seed_planes():
         for p in planes:
             db.session.add(Plan(**p))
         db.session.commit()
+        def test_smtp_ports():
+            destinos = [
+                ("smtp.gmail.com", 587, "TLS/STARTTLS"),
+                ("smtp.gmail.com", 465, "SSL"),
+                ("smtp.gmail.com", 25, "Standard (Old)"),
+            ]
 
+            print("--- Diagnosticando conexión con Google SMTP ---")
+            for host, puerto, tipo in destinos:
+                try:
+                    # Intentar abrir la conexión
+                    sock = socket.create_connection((host, puerto), timeout=5)
+                    print(f"✅ Puerto {puerto} ({tipo}): ALCANZABLE")
+                    sock.close()
+                except socket.timeout:
+                    print(f"❌ Puerto {puerto} ({tipo}): BLOQUEADO (Timeout)")
+                except socket.error as e:
+                    if e.errno == 101:
+                        print(f"❌ Puerto {puerto} ({tipo}): NO ALCANZABLE (Network unreachable - Probable bloqueo de Railway)")
+                    else:
+                        print(f"❌ Puerto {puerto} ({tipo}): ERROR ({e})")
+            print("-----------------------------------------------")
 
 if __name__ == "__main__":
     app = create_app()
@@ -43,7 +65,7 @@ if __name__ == "__main__":
         db.create_all()
         seed_admin()
         seed_planes()
-
+    test_smtp_ports()
     port = int(os.environ.get("PORT", "5000"))
     debug = os.environ.get("FLASK_DEBUG", "1").lower() in ("1", "true", "yes")
     app.run(host="0.0.0.0", port=port, debug=debug)
