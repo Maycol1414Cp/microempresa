@@ -46,15 +46,15 @@ def seed_planes():
                 try:
                     # Intentar abrir la conexión
                     sock = socket.create_connection((host, puerto), timeout=5)
-                    print(f"✅ Puerto {puerto} ({tipo}): ALCANZABLE")
+                    print(f"✅ Puerto {puerto} ({tipo}): ALCANZABLE", flush=True)
                     sock.close()
                 except socket.timeout:
-                    print(f"❌ Puerto {puerto} ({tipo}): BLOQUEADO (Timeout)")
+                    print(f"❌ Puerto {puerto} ({tipo}): BLOQUEADO (Timeout)", flush=True)
                 except socket.error as e:
                     if e.errno == 101:
-                        print(f"❌ Puerto {puerto} ({tipo}): NO ALCANZABLE (Network unreachable - Probable bloqueo de Railway)")
+                        print(f"❌ Puerto {puerto} ({tipo}): NO ALCANZABLE (Network unreachable - Probable bloqueo de Railway)", flush=True)
                     else:
-                        print(f"❌ Puerto {puerto} ({tipo}): ERROR ({e})")
+                        print(f"❌ Puerto {puerto} ({tipo}): ERROR ({e})", flush=True)
             print("-----------------------------------------------")
 
 if __name__ == "__main__":
